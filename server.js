@@ -1,8 +1,8 @@
 
 
-
 // import dotenv from "dotenv";
 // dotenv.config();
+
 // import express from "express";
 // import cors from "cors";
 // import { join, dirname } from "path";
@@ -10,13 +10,14 @@
 // import { createServer } from "http";
 // import { Server } from "socket.io";
 
+// /* ================= PATH SETUP ================= */
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = dirname(__filename);
 
-// // DB
+// /* ================= DB ================= */
 // import connectDB from "./config/db.js";
 
-// // Routes
+// /* ================= ROUTES ================= */
 // import courseRoutes from "./routes/courseRoutes.js";
 // import enrollRoutes from "./routes/enrollRoutes.js";
 // import resourceRoutes from "./routes/resourceRoutes.js";
@@ -27,34 +28,30 @@
 
 // import { createAdminIfNotExists } from "./controllers/authController.js";
 
-
-
+// /* ================= APP ================= */
 // const app = express();
 // const server = createServer(app);
 
-// // 💥 REAL-TIME SOCKET.IO SERVER
+// /* ================= SOCKET.IO ================= */
 // export const io = new Server(server, {
-//   cors: {
-//     origin: "*",
-//   },
+//   cors: { origin: "*" },
 // });
 
-// io.on("connection", (socket) => {
-//   console.log("🔥 Admin Connected:", socket.id);
-// });
 
-// // DB Connect
+// io.on("connection", () => {});
+
+// /* ================= INIT ================= */
 // connectDB();
 // createAdminIfNotExists();
 
-// // Middleware
+// /* ================= MIDDLEWARE ================= */
 // app.use(cors());
 // app.use(express.json());
 
-// // Static folder for uploads
+// /* ================= STATIC ================= */
 // app.use("/uploads", express.static(join(__dirname, "uploads")));
 
-// // ROUTES
+// /* ================= API ROUTES ================= */
 // app.use("/api/admin", authRoutes);
 // app.use("/api/courses", courseRoutes);
 // app.use("/api/enroll", enrollRoutes);
@@ -63,16 +60,14 @@
 // app.use("/api/calendar", calendarRoutes);
 // app.use("/api/contact", contactRoutes);
 
-// // Health Check
-// app.get("/api/health", (_req, res) => res.json({ ok: true }));
+// /* ================= HEALTH ================= */
+// app.get("/api/health", (_req, res) => {
+//   res.json({ ok: true });
+// });
 
-// // SERVER START
+// /* ================= SERVER ================= */
 // const PORT = process.env.PORT || 2000;
-// server.listen(PORT, () =>
-//   console.log(`🚀 Server with Real-Time Notifications running on ${PORT}`)
-// );
-
-
+// server.listen(PORT);
 
 
 
@@ -111,10 +106,15 @@ const server = createServer(app);
 
 /* ================= SOCKET.IO ================= */
 export const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: {
+    origin: [
+      "https://www.almaahir.online",
+      "https://almaahir.online",
+      "http://localhost:5173",
+    ],
+  },
 });
 
-// ❌ no console spam
 io.on("connection", () => {});
 
 /* ================= INIT ================= */
@@ -122,7 +122,16 @@ connectDB();
 createAdminIfNotExists();
 
 /* ================= MIDDLEWARE ================= */
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://www.almaahir.online",
+      "https://almaahir.online",
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 /* ================= STATIC ================= */
@@ -144,4 +153,7 @@ app.get("/api/health", (_req, res) => {
 
 /* ================= SERVER ================= */
 const PORT = process.env.PORT || 2000;
-server.listen(PORT);
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+
