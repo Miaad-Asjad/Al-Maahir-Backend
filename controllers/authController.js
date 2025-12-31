@@ -32,23 +32,53 @@ export async function adminLogin(req, res) {
       token,
     });
   } catch {
-    
-
     res.status(500).json({ message: "Unable to login at the moment." });
   }
  }
+
+
+// export async function createAdminIfNotExists() {
+//   try {
+//     const email = process.env.ADMIN_EMAIL;
+//     const password = process.env.ADMIN_PASSWORD;
+//     if (!email || !password) return;
+
+//     const exists = await User.findOne({ email });
+//     if (exists) return;
+
+//     const hash = await bcrypt.hash(password, 10);
+//     const admin = new User({
+//       name: "Admin",
+//       email,
+//       passwordHash: hash,
+//       role: "admin",
+//     });
+
+//     await admin.save();
+//   } catch {
+//     // intentionally silent (production safe)
+//   }
+// }
 
 
 export async function createAdminIfNotExists() {
   try {
     const email = process.env.ADMIN_EMAIL;
     const password = process.env.ADMIN_PASSWORD;
-    if (!email || !password) return;
+
+    if (!email || !password) {
+      console.error("❌ ADMIN_EMAIL or ADMIN_PASSWORD missing");
+      return;
+    }
 
     const exists = await User.findOne({ email });
-    if (exists) return;
+    if (exists) {
+      console.log("✅ Admin already exists");
+      return;
+    }
 
     const hash = await bcrypt.hash(password, 10);
+
     const admin = new User({
       name: "Admin",
       email,
@@ -57,7 +87,8 @@ export async function createAdminIfNotExists() {
     });
 
     await admin.save();
-  } catch {
-    // intentionally silent (production safe)
+    console.log("🔥 Admin user CREATED successfully");
+  } catch (err) {
+    console.error("❌ createAdminIfNotExists error:", err);
   }
 }
