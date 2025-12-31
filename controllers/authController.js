@@ -31,15 +31,11 @@ export async function adminLogin(req, res) {
       },
       token,
     });
-  // } catch {
-    } catch (err) {
-  console.error("ADMIN LOGIN ERROR 👉", err);
-  console.error("JWT_SECRET 👉", process.env.JWT_SECRET);
-  res.status(500).json({ message: "Unable to login at the moment." });
-}
+  } catch {
+    
 
-//     res.status(500).json({ message: "Unable to login at the moment." });
-//   }
+    res.status(500).json({ message: "Unable to login at the moment." });
+  }
  }
 
 
