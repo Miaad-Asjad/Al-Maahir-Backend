@@ -120,7 +120,7 @@ io.on("connection", () => {});
 
 /* ================= INIT ================= */
 connectDB();
-createAdminIfNotExists
+await createAdminIfNotExists();
 
 /* ================= MIDDLEWARE ================= */
 app.use(
