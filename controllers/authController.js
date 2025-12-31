@@ -1,3 +1,8 @@
+import bcrypt from "bcryptjs";
+import User from "../models/User.js";   
+
+
+
 export async function adminLogin(req, res) {
   try {
     const { email, password } = req.body;
@@ -59,7 +64,6 @@ export async function adminLogin(req, res) {
 //     // intentionally silent (production safe)
 //   }
 // }
-
 
 export async function createAdminIfNotExists() {
   try {

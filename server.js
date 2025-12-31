@@ -97,8 +97,9 @@ import testimonialRoutes from "./routes/testimonialRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
-
 import { createAdminIfNotExists } from "./controllers/authController.js";
+
+
 
 /* ================= APP ================= */
 const app = express();
@@ -119,7 +120,7 @@ io.on("connection", () => {});
 
 /* ================= INIT ================= */
 connectDB();
-createAdminIfNotExists();
+createAdminIfNotExists
 
 /* ================= MIDDLEWARE ================= */
 app.use(
