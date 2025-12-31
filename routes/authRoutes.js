@@ -4,7 +4,7 @@ import { adminLogin, createAdminIfNotExists, } from "../controllers/authControll
 
 const router = Router();
 
-createAdminIfNotExists();
+// createAdminIfNotExists();
 
 router.post("/login", adminLogin);
 
