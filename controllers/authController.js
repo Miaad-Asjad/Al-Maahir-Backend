@@ -40,7 +40,7 @@ export async function adminLogin(req, res) {
 
 //     res.status(500).json({ message: "Unable to login at the moment." });
 //   }
-// }
+ }
 
 
 export async function createAdminIfNotExists() {
