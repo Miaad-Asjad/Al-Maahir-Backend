@@ -2,9 +2,6 @@ import ContactMessage from "../models/ContactMessage.js";
 import sendEmail from "../utils/sendEmail.js";
 import { io } from "../server.js";
 
-/* ======================================================
-   CREATE MESSAGE (USER)
-====================================================== */
 export async function createMessage(req, res) {
   try {
     const { name, email, subject, message } = req.body;
@@ -20,14 +17,14 @@ export async function createMessage(req, res) {
 
     await msg.save();
 
-    // 🔔 REAL-TIME NOTIFICATION (ADMIN)
+    // REAL-TIME NOTIFICATION (ADMIN)
     io.emit("new-message", {
       id: msg._id,
       name,
       subject,
     });
 
-    // 📧 EMAIL TO ADMIN (silent fail allowed)
+    // EMAIL TO ADMIN (silent fail allowed)
     try {
       await sendEmail({
         to: process.env.ADMIN_EMAIL,
@@ -47,9 +44,8 @@ export async function createMessage(req, res) {
   }
 }
 
-/* ======================================================
-   GET ALL MESSAGES (ADMIN)
-====================================================== */
+
+
 export async function getMessages(_req, res) {
   try {
     const list = await ContactMessage.find().sort({ createdAt: -1 });
@@ -59,9 +55,8 @@ export async function getMessages(_req, res) {
   }
 }
 
-/* ======================================================
-   MARK AS READ (ADMIN)
-====================================================== */
+
+
 export async function markAsRead(req, res) {
   try {
     const updated = await ContactMessage.findByIdAndUpdate(
@@ -70,7 +65,7 @@ export async function markAsRead(req, res) {
       { new: true }
     );
 
-    // 🔔 REAL-TIME UPDATE
+    
     io.emit("message-read", { id: updated._id });
 
     res.json(updated);
@@ -79,14 +74,13 @@ export async function markAsRead(req, res) {
   }
 }
 
-/* ======================================================
-   DELETE MESSAGE (ADMIN)
-====================================================== */
+
+
 export async function deleteMessage(req, res) {
   try {
     await ContactMessage.findByIdAndDelete(req.params.id);
 
-    // 🔔 REAL-TIME UPDATE
+    
     io.emit("message-deleted");
 
     res.json({ success: true });
@@ -95,9 +89,8 @@ export async function deleteMessage(req, res) {
   }
 }
 
-/* ======================================================
-   REPLY TO MESSAGE (ADMIN)
-====================================================== */
+
+
 export async function replyToMessage(req, res) {
   try {
     const { id } = req.params;
@@ -108,7 +101,7 @@ export async function replyToMessage(req, res) {
       return res.status(404).json({ message: "Message not found." });
     }
 
-    // 📧 SEND EMAIL TO USER
+    // SEND EMAIL TO USER
     await sendEmail({
       to: msg.email,
       subject: `Re: ${msg.subject}`,
@@ -120,12 +113,12 @@ export async function replyToMessage(req, res) {
       `,
     });
 
-    // ✅ UPDATE MESSAGE STATE
+    // UPDATE MESSAGE STATE
     msg.replied = true;
     msg.read = true;
     await msg.save();
 
-    // 🔔 REAL-TIME UPDATE
+    
     io.emit("message-replied", { id: msg._id });
 
     res.json({ success: true });

@@ -1,33 +1,6 @@
-// import User from "../models/User.js";
-// import pkg from "jsonwebtoken";
-// const { verify } = pkg;
-
-// export async function requireAdmin(req, res, next) {
-//   try {
-//     const token = req.headers.authorization?.split(" ")[1];
-
-//     if (!token) {
-//       return res.status(401).json({ message: "No token provided" });
-//     }
-
-//     const decoded = verify(token, process.env.JWT_SECRET);
-
-//     const user = await User.findById(decoded.id);
-//     if (!user || user.role !== "admin") {
-//       return res.status(403).json({ message: "Not authorized" });
-//     }
-
-//     req.user = user;
-//     next();
-//   } catch (err) {
-//     console.error("AUTH ERROR:", err.message);
-//     return res.status(401).json({ message: "Invalid token" });
-//   }
-// }
 
 
 
-// middleware/authMiddleware.js
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 

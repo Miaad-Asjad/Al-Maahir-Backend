@@ -1,8 +1,6 @@
 import Testimonial from "../models/Testimonial.js";
 
-/* ======================================================
-   CREATE TESTIMONIAL (ADMIN)
-====================================================== */
+
 export async function create(req, res) {
   try {
     const { name, course, text } = req.body;
@@ -29,9 +27,7 @@ export async function create(req, res) {
   }
 }
 
-/* ======================================================
-   GET ALL TESTIMONIALS (PUBLIC / ADMIN)
-====================================================== */
+
 export async function getAll(_req, res) {
   try {
     const list = await Testimonial.find().sort({ createdAt: -1 });
@@ -43,9 +39,7 @@ export async function getAll(_req, res) {
   }
 }
 
-/* ======================================================
-   DELETE TESTIMONIAL (ADMIN)
-====================================================== */
+
 export async function deleteOne(req, res) {
   try {
     const deleted = await Testimonial.findByIdAndDelete(req.params.id);

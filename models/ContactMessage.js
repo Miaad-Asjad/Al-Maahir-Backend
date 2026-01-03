@@ -7,7 +7,7 @@ const ContactMessageSchema = new Schema(
     subject: { type: String, required: true },
     message: { type: String, required: true },
 
-    read: { type: Boolean, default: false }, // unread by default
+    read: { type: Boolean, default: false }, 
   },
   { timestamps: true }
 );

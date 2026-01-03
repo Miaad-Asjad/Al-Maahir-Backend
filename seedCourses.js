@@ -1,4 +1,4 @@
-// seedCourses.js
+
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Course from "./models/Course.js";
@@ -6,10 +6,6 @@ import Course from "./models/Course.js";
 dotenv.config();
 
 const courses = [
-  
-  
-
-  
     {
 
     title: "Tehfeez-ul-Quran Course",

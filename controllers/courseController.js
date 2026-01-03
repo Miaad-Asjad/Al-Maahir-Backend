@@ -1,9 +1,8 @@
 import Course from "../models/Course.js";
 import slugify from "slugify";
 
-/* ======================================================
-   CREATE COURSE
-====================================================== */
+
+
 export async function createCourse(req, res) {
   try {
     const {
@@ -41,9 +40,8 @@ export async function createCourse(req, res) {
   }
 }
 
-/* ======================================================
-   GET ALL COURSES
-====================================================== */
+
+
 export async function getAll(_req, res) {
   try {
     const list = await Course.find().sort({ createdAt: -1 });
@@ -53,9 +51,9 @@ export async function getAll(_req, res) {
   }
 }
 
-/* ======================================================
-   GET COURSE BY SLUG (PUBLIC)
-====================================================== */
+
+
+
 export async function getBySlug(req, res) {
   try {
     const course = await Course.findOne({ slug: req.params.slug });
@@ -70,9 +68,7 @@ export async function getBySlug(req, res) {
   }
 }
 
-/* ======================================================
-   GET COURSE BY ID (ADMIN)
-====================================================== */
+
 export async function getById(req, res) {
   try {
     const course = await Course.findById(req.params.id);
@@ -87,19 +83,18 @@ export async function getById(req, res) {
   }
 }
 
-/* ======================================================
-   UPDATE COURSE (USING SLUG)
-====================================================== */
+
+
 export async function updateCourse(req, res) {
   try {
     const data = { ...req.body };
 
-    // update slug ONLY if sent
+    
     if (data.slug) {
       data.slug = slugify(data.slug, { lower: true, strict: true });
     }
 
-    // normalize feeStructure
+    
     if (data.feeStructure) {
       data.feeStructure = Array.isArray(data.feeStructure)
         ? data.feeStructure
@@ -122,9 +117,7 @@ export async function updateCourse(req, res) {
   }
 }
 
-/* ======================================================
-   DELETE COURSE
-====================================================== */
+
 export async function deleteCourse(req, res) {
   try {
     const deleted = await Course.findOneAndDelete({
@@ -141,9 +134,7 @@ export async function deleteCourse(req, res) {
   }
 }
 
-/* ======================================================
-   DUPLICATE COURSE
-====================================================== */
+
 export async function duplicateCourse(req, res) {
   try {
     const { slug } = req.params;

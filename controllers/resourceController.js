@@ -2,9 +2,7 @@ import Resource from "../models/Resource.js";
 import { join } from "path";
 import fs from "fs/promises";
 
-/* ======================================================
-   UPLOAD RESOURCE (ADMIN)
-====================================================== */
+
 export async function uploadResource(req, res) {
   try {
     if (!req.file) {
@@ -32,9 +30,7 @@ export async function uploadResource(req, res) {
   }
 }
 
-/* ======================================================
-   GET ALL RESOURCES (ADMIN)
-====================================================== */
+
 export async function getResources(_req, res) {
   try {
     const items = await Resource.find().sort({ createdAt: -1 });
@@ -46,9 +42,7 @@ export async function getResources(_req, res) {
   }
 }
 
-/* ======================================================
-   DELETE RESOURCE (ADMIN)
-====================================================== */
+
 export async function deleteResource(req, res) {
   try {
     const item = await Resource.findById(req.params.id);
@@ -60,7 +54,7 @@ export async function deleteResource(req, res) {
 
     const filePath = join(process.cwd(), "uploads", item.filename);
 
-    // delete file safely
+   
     try {
       await fs.unlink(filePath);
     } catch {
@@ -77,9 +71,7 @@ export async function deleteResource(req, res) {
   }
 }
 
-/* ======================================================
-   UPDATE RESOURCE META (ADMIN)
-====================================================== */
+
 export async function updateResource(req, res) {
   try {
     const updates = {};

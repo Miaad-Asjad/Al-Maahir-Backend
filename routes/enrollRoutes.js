@@ -10,7 +10,7 @@ const router = Router();
 
 router.post("/", single("file"), createEnrollment);
 
-// admin only
+
 router.get("/all", requireAdmin, getAllEnrollments);
 router.put("/:id/status", requireAdmin, updateStatus);
 

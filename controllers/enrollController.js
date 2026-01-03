@@ -7,9 +7,7 @@ import {
 } from "../utils/emailTemplates.js";
 import { io } from "../server.js";
 
-/* ======================================================
-   CREATE ENROLLMENT (PUBLIC)
-====================================================== */
+
 export async function createEnrollment(req, res) {
   try {
     const {
@@ -25,7 +23,7 @@ export async function createEnrollment(req, res) {
     let courseTitle = courseName || "";
     let courseSlug = "";
 
-    // fetch course details if ID provided
+    
     if (courseId) {
       const c = await Course.findById(courseId);
       if (c) {
@@ -34,7 +32,7 @@ export async function createEnrollment(req, res) {
       }
     }
 
-    // safely parse custom fields
+    
     let parsedCustom = {};
     try {
       parsedCustom = customFields
@@ -59,13 +57,13 @@ export async function createEnrollment(req, res) {
 
     await enrollment.save();
 
-    // 🔔 REAL-TIME ADMIN NOTIFICATION
+    
     io.emit("new-enrollment", {
       student: name,
       course: courseTitle,
     });
 
-    // 📧 ADMIN EMAIL (non-blocking)
+    
     try {
       await sendEmail({
         to: process.env.ADMIN_EMAIL,
@@ -88,9 +86,7 @@ export async function createEnrollment(req, res) {
   }
 }
 
-/* ======================================================
-   GET ALL ENROLLMENTS (ADMIN)
-====================================================== */
+
 export async function getAllEnrollments(_req, res) {
   try {
     const list = await Enrollment.find().sort({ createdAt: -1 });
@@ -100,9 +96,8 @@ export async function getAllEnrollments(_req, res) {
   }
 }
 
-/* ======================================================
-   GROUP ENROLLMENTS BY COURSE (ADMIN)
-====================================================== */
+
+
 export async function getGroupedEnrollments(_req, res) {
   try {
     const enrollments = await Enrollment.find().sort({ createdAt: -1 });
@@ -128,9 +123,8 @@ export async function getGroupedEnrollments(_req, res) {
   }
 }
 
-/* ======================================================
-   UPDATE ENROLLMENT STATUS (ADMIN)
-====================================================== */
+
+
 export async function updateStatus(req, res) {
   try {
     const { id } = req.params;
@@ -149,7 +143,7 @@ export async function updateStatus(req, res) {
       ? await Course.findById(enrollment.course)
       : null;
 
-    /* ---------- ACCEPTED ---------- */
+   
     if (
       status === "accepted" &&
       prevStatus !== "accepted" &&
@@ -170,7 +164,7 @@ export async function updateStatus(req, res) {
       await enrollment.save();
     }
 
-    /* ---------- REJECTED ---------- */
+    
     if (
       status === "rejected" &&
       prevStatus !== "rejected" &&

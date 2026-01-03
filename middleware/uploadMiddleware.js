@@ -1,6 +1,6 @@
 
 
-// server/middleware/uploadMiddleware.js
+
 import multer from "multer";
 import { join } from "path";
 import { fileURLToPath } from "url";
