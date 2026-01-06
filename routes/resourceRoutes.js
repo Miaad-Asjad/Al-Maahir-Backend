@@ -29,7 +29,8 @@ const router = Router();
 router.get("/", getResources);
 
 /* ✅ Resource upload me file required */
-router.post("/upload", requireAdmin, uploadResourceFile, uploadResource);
+router.post("/upload", requireAdmin, single("file"), uploadResource);
+
 
 router.delete("/:id", requireAdmin, deleteResource);
 router.put("/:id", requireAdmin, updateResource);
