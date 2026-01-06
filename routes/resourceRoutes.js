@@ -21,7 +21,7 @@ import {
   deleteResource,
   updateResource,
 } from "../controllers/resourceController.js";
-import { uploadResourceFile } from "../middleware/uploadMiddleware.js";
+import { single } from "../middleware/uploadMiddleware.js";
 import { requireAdmin } from "../middleware/authMiddleware.js";
 
 const router = Router();
