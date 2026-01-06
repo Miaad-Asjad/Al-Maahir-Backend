@@ -31,23 +31,25 @@ import { join } from "path";
 import fs from "fs";
 
 const uploadDir = join(process.cwd(), "uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadDir),
   filename: (_req, file, cb) => {
     const ext = file.originalname.split(".").pop();
-    const name = `${Date.now()}-${Math.random()
-      .toString(36)
-      .slice(2, 8)}.${ext}`;
+    const name = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
     cb(null, name);
-  },
+  }
 });
 
 const upload = multer({ storage });
 
-/* ✅ SEPARATE EXPORTS */
-export const uploadEnrollmentFile = upload.single("file");
-export const uploadResourceFile = upload.single("file");
+/* ✅ Enrollment (file optional) */
+export const uploadEnrollmentFile = (req, res, next) => {
+  upload.single("file")(req, res, next);
+};
+
+/* ✅ Resource upload */
+export const uploadResourceFile = (req, res, next) => {
+  upload.single("file")(req, res, next);
+};
