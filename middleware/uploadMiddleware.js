@@ -22,5 +22,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-export const single = (fieldName) => upload.single(fieldName);
+export const single = upload.single("file");
+
 export const anyFiles = () => upload.any();
