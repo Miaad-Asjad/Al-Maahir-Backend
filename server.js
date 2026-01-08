@@ -119,10 +119,10 @@ const server = createServer(app);
 /* ================= SOCKET IO ================= */
 export const io = new Server(server, {
   cors: {
-    origin: true, // allow all for now
-    credentials: true,
+    origin: "*",
   },
 });
+
 
 io.on("connection", () => {});
 
@@ -133,12 +133,12 @@ await createAdminIfNotExists();
 /* ================= CORS (IMPORTANT FIX) ================= */
 app.use(
   cors({
-    origin: true, // ✅ dynamic origin allow (fixes Railway CORS issues)
-    credentials: true,
+    origin: "*",   // ✅ allow all domains
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 // ✅ Allow all OPTIONS preflight requests (critical)
 app.use((req, res, next) => {
