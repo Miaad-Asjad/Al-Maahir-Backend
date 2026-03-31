@@ -10,14 +10,15 @@ const enrollmentSchema = new Schema(
 
     // Student info
     name: { type: String, required: true },
-    email: { type: String },
+    
     phone: { type: String },
 
+    email: { type: String, required: true },
     
     customFields: { type: Schema.Types.Mixed },
 
     // Files (audio, receipts, etc)
-    file: { type: String },
+    file: { type: String,  required: true  },
 
     // Admin can update application status
     status: {
