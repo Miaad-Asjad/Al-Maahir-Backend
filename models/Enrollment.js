@@ -4,7 +4,6 @@ const enrollmentSchema = new Schema(
   {
     
     course: { type: Schema.Types.ObjectId, ref: "Course" },
-
     courseName: { type: String, required: true },
     courseSlug: { type: String, required: true }, 
 
@@ -18,7 +17,7 @@ const enrollmentSchema = new Schema(
     customFields: { type: Schema.Types.Mixed },
 
     // Files (audio, receipts, etc)
-    file: { type: String,  required: true  },
+    file: { type: String },
 
     // Admin can update application status
     status: {
