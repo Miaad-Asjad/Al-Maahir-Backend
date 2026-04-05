@@ -17,7 +17,10 @@ const enrollmentSchema = new Schema(
     customFields: { type: Schema.Types.Mixed },
 
     // Files (audio, receipts, etc)
-    file: { type: String },
+    files: {
+  type: [String],
+  default: [],
+},
 
     // Admin can update application status
     status: {

@@ -8,6 +8,83 @@ import {
 import { io } from "../server.js";
 
 
+// export async function createEnrollment(req, res) {
+//   try {
+//     const {
+//       course,
+//       name,
+//       email,
+//       phone,
+//       courseName,
+//       customFields,
+//     } = req.body;
+
+//     let courseId = course || null;
+//     let courseTitle = courseName || "";
+//     let courseSlug = "";
+
+    
+//     if (courseId) {
+//       const c = await Course.findById(courseId);
+//       if (c) {
+//         courseTitle = c.title;
+//         courseSlug = c.slug;
+//       }
+//     }
+
+    
+//     let parsedCustom = {};
+//     try {
+//       parsedCustom = customFields
+//         ? typeof customFields === "string"
+//           ? JSON.parse(customFields)
+//           : customFields
+//         : {};
+//     } catch {
+//       parsedCustom = {};
+//     }
+
+//     const enrollment = new Enrollment({
+//       course: courseId,
+//       courseName: courseTitle,
+//       courseSlug,
+//       name,
+//       email,
+//       phone,
+//       customFields: parsedCustom,
+//       file: req.file ? req.file.filename : null,
+//     });
+
+//     await enrollment.save();
+
+    
+//     io.emit("new-enrollment", {
+//       student: name,
+//       course: courseTitle,
+//     });
+
+    
+//     try {
+//       await sendEmail({
+//         to: process.env.ADMIN_EMAIL,
+//         subject: `New Enrollment – ${courseTitle}`,
+//         html: `
+//           <h3>New Enrollment Received</h3>
+//           <p><b>Course:</b> ${courseTitle}</p>
+//           <p><b>Name:</b> ${name}</p>
+//           <p><b>Email:</b> ${email}</p>
+//           <p><b>Phone:</b> ${phone}</p>
+//         `,
+//       });
+//     } catch {}
+
+//     res.json(enrollment);
+//   } catch {
+//     res.status(500).json({
+//       message: "Failed to submit enrollment. Please try again.",
+//     });
+//   }
+// }
 export async function createEnrollment(req, res) {
   try {
     const {
@@ -23,7 +100,7 @@ export async function createEnrollment(req, res) {
     let courseTitle = courseName || "";
     let courseSlug = "";
 
-    
+    // ✅ Course fetch
     if (courseId) {
       const c = await Course.findById(courseId);
       if (c) {
@@ -32,18 +109,23 @@ export async function createEnrollment(req, res) {
       }
     }
 
-    
+    // ✅ Custom fields parse
     let parsedCustom = {};
     try {
-      parsedCustom = customFields
-        ? typeof customFields === "string"
+      parsedCustom =
+        typeof customFields === "string"
           ? JSON.parse(customFields)
-          : customFields
-        : {};
+          : customFields || {};
     } catch {
       parsedCustom = {};
     }
 
+    // ✅ MULTIPLE FILES (🔥 MAIN FIX)
+    const uploadedFiles = req.files
+      ? req.files.map((file) => file.filename)
+      : [];
+
+    // ✅ Create enrollment
     const enrollment = new Enrollment({
       course: courseId,
       courseName: courseTitle,
@@ -52,18 +134,20 @@ export async function createEnrollment(req, res) {
       email,
       phone,
       customFields: parsedCustom,
-      file: req.file ? req.file.filename : null,
+
+      // 🔥 IMPORTANT
+      files: uploadedFiles,
     });
 
     await enrollment.save();
 
-    
+    // ✅ Real-time notify
     io.emit("new-enrollment", {
       student: name,
       course: courseTitle,
     });
 
-    
+    // ✅ Admin email
     try {
       await sendEmail({
         to: process.env.ADMIN_EMAIL,
@@ -76,15 +160,20 @@ export async function createEnrollment(req, res) {
           <p><b>Phone:</b> ${phone}</p>
         `,
       });
-    } catch {}
+    } catch (err) {
+      console.log("Admin email failed:", err.message);
+    }
 
     res.json(enrollment);
-  } catch {
+  } catch (err) {
+    console.log("CREATE ENROLLMENT ERROR:", err.message);
     res.status(500).json({
       message: "Failed to submit enrollment. Please try again.",
     });
   }
 }
+
+
 
 
 export async function getAllEnrollments(_req, res) {

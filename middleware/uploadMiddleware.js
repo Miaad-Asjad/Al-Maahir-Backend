@@ -106,22 +106,22 @@ const storage = multer.diskStorage({
   },
 });
 
-/* ================= FILE FILTER (🔥 IMPORTANT) ================= */
+
 const fileFilter = (_req, file, cb) => {
   const allowedTypes = [
-    // 🎧 AUDIO
+    //  AUDIO
     "audio/mpeg",
     "audio/mp3",
     "audio/wav",
     "audio/webm",
     "audio/ogg",
 
-    // 🖼️ IMAGES
+    //  IMAGES
     "image/jpeg",
     "image/png",
     "image/jpg",
 
-    // 📄 DOCS
+    //  DOCS
     "application/pdf",
   ];
 
@@ -137,7 +137,7 @@ const fileFilter = (_req, file, cb) => {
   }
 };
 
-/* ================= MULTER INSTANCE ================= */
+
 const upload = multer({
   storage,
   fileFilter,
@@ -148,7 +148,7 @@ const upload = multer({
 
 /* ================= ENROLLMENT UPLOAD ================= */
 export const uploadEnrollmentFile = (req, res, next) => {
-  upload.single("file")(req, res, (err) => {
+  upload.any()(req, res, (err) => {
     if (err) {
       console.log("❌ FILE UPLOAD ERROR:", err.message);
       return res.status(400).json({
@@ -157,8 +157,7 @@ export const uploadEnrollmentFile = (req, res, next) => {
       });
     }
 
-    // 🔥 DEBUG (very important)
-    console.log("✅ FILE RECEIVED:", req.file);
+    console.log("✅ ALL FILES RECEIVED:", req.files);
 
     next();
   });
