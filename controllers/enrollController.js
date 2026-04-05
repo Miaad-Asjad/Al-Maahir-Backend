@@ -121,9 +121,13 @@ export async function createEnrollment(req, res) {
     }
 
     // ✅ MULTIPLE FILES (🔥 MAIN FIX)
-    const uploadedFiles = req.files
-      ? req.files.map((file) => file.filename)
-      : [];
+    const uploadedFiles = {};
+
+if (req.files) {
+  req.files.forEach((file) => {
+    uploadedFiles[file.fieldname] = file.filename;
+  });
+}
 
     // ✅ Create enrollment
     const enrollment = new Enrollment({
