@@ -144,7 +144,7 @@ const upload = multer({
 
 /* ================= ENROLLMENT UPLOAD ================= */
 export const uploadEnrollmentFile = (req, res, next) => {
-  upload.single("file")(req, res, (err) => {
+  upload.any()(req, res, (err) => { // ✅ allows multiple files
     if (err) {
       console.log("❌ FILE UPLOAD ERROR:", err.message);
       return res.status(400).json({
@@ -153,11 +153,11 @@ export const uploadEnrollmentFile = (req, res, next) => {
       });
     }
 
-    console.log("✅ FILE RECEIVED:", req.file);
-
+    console.log("✅ FILES RECEIVED:", req.files); // array of files
     next();
   });
 };
+
 
 /* ================= RESOURCE UPLOAD ================= */
 export const uploadResourceFile = (req, res, next) => {
