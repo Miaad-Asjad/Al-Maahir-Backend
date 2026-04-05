@@ -81,7 +81,9 @@
 //     next();
 //   });
 // };
- import multer from "multer";
+
+
+import multer from "multer";
 import { join } from "path";
 import fs from "fs";
 
@@ -106,38 +108,32 @@ const storage = multer.diskStorage({
   },
 });
 
-
+/* ================= FILE FILTER (🔥 FIXED) ================= */
 const fileFilter = (_req, file, cb) => {
-  const allowedTypes = [
-    //  AUDIO
-    "audio/mpeg",
-    "audio/mp3",
-    "audio/wav",
-    "audio/webm",
-    "audio/ogg",
+  console.log("📂 FILE TYPE:", file.mimetype);
 
-    //  IMAGES
-    "image/jpeg",
-    "image/png",
-    "image/jpg",
-
-    //  DOCS
-    "application/pdf",
-  ];
-
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(
-      new Error(
-        "Invalid file type. Only audio, images, and PDF files are allowed."
-      ),
-      false
-    );
+  // ✅ allow ALL audio
+  if (file.mimetype.startsWith("audio/")) {
+    return cb(null, true);
   }
+
+  // ✅ allow images
+  if (file.mimetype.startsWith("image/")) {
+    return cb(null, true);
+  }
+
+  // ✅ allow pdf
+  if (file.mimetype === "application/pdf") {
+    return cb(null, true);
+  }
+
+  return cb(
+    new Error("Only audio, image, and PDF files are allowed"),
+    false
+  );
 };
 
-
+/* ================= MULTER INSTANCE ================= */
 const upload = multer({
   storage,
   fileFilter,
@@ -152,12 +148,12 @@ export const uploadEnrollmentFile = (req, res, next) => {
     if (err) {
       console.log("❌ FILE UPLOAD ERROR:", err.message);
       return res.status(400).json({
-        message: "Enrollment file upload failed",
+        message: "File upload failed",
         error: err.message,
       });
     }
 
-    console.log("✅ ALL FILES RECEIVED:", req.files);
+    console.log("✅ FILES RECEIVED:", req.files);
 
     next();
   });
@@ -167,9 +163,9 @@ export const uploadEnrollmentFile = (req, res, next) => {
 export const uploadResourceFile = (req, res, next) => {
   upload.single("file")(req, res, (err) => {
     if (err) {
-      console.log("❌ RESOURCE UPLOAD ERROR:", err.message);
+      console.log("❌ RESOURCE ERROR:", err.message);
       return res.status(400).json({
-        message: "Resource file upload failed",
+        message: "Resource upload failed",
         error: err.message,
       });
     }
