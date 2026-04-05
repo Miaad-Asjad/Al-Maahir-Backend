@@ -9,22 +9,111 @@ import { io } from "../server.js";
 
 
 
+// export async function createEnrollment(req, res) {
+//   try {
+//     const {
+//       course,
+//       name,
+//       email,
+//       phone,
+//       courseName,
+//       customFields,
+//     } = req.body;
+
+//     let courseId = course || null;
+//     let courseTitle = courseName || "";
+//     let courseSlug = "";
+
+//     // ✅ Course fetch
+//     if (courseId) {
+//       const c = await Course.findById(courseId);
+//       if (c) {
+//         courseTitle = c.title;
+//         courseSlug = c.slug;
+//       }
+//     }
+
+//     // ✅ Custom fields parse
+//     let parsedCustom = {};
+//     try {
+//       parsedCustom =
+//         typeof customFields === "string"
+//           ? JSON.parse(customFields)
+//           : customFields || {};
+//     } catch {
+//       parsedCustom = {};
+//     }
+
+//     // ✅ MULTIPLE FILES (🔥 MAIN FIX)
+//     const uploadedFiles = {};
+
+// if (req.files) {
+//   req.files.forEach((file) => {
+//     uploadedFiles[file.fieldname] = file.filename;
+//   });
+// }
+
+
+
+//     // ✅ Create enrollment
+//     const enrollment = new Enrollment({
+//       course: courseId,
+//       courseName: courseTitle,
+//       courseSlug,
+//       name,
+//       email,
+//       phone,
+//       customFields: parsedCustom,
+
+//       // 🔥 IMPORTANT
+//       files: uploadedFiles,
+//     });
+
+//     await enrollment.save();
+
+//     // ✅ Real-time notify
+//     io.emit("new-enrollment", {
+//       student: name,
+//       course: courseTitle,
+//     });
+
+//     // ✅ Admin email
+//     try {
+//       await sendEmail({
+//         to: process.env.ADMIN_EMAIL,
+//         subject: `New Enrollment – ${courseTitle}`,
+//         html: `
+//           <h3>New Enrollment Received</h3>
+//           <p><b>Course:</b> ${courseTitle}</p>
+//           <p><b>Name:</b> ${name}</p>
+//           <p><b>Email:</b> ${email}</p>
+//           <p><b>Phone:</b> ${phone}</p>
+//         `,
+//       });
+//     } catch (err) {
+//       console.log("Admin email failed:", err.message);
+//     }
+
+//     res.json(enrollment);
+//   } catch (err) {
+//     console.log("CREATE ENROLLMENT ERROR:", err.message);
+//     res.status(500).json({
+//       message: "Failed to submit enrollment. Please try again.",
+//     });
+//   }
+// }
+
+
+
+
 export async function createEnrollment(req, res) {
   try {
-    const {
-      course,
-      name,
-      email,
-      phone,
-      courseName,
-      customFields,
-    } = req.body;
+    const { course, name, email, phone, courseName, customFields } = req.body;
 
     let courseId = course || null;
     let courseTitle = courseName || "";
     let courseSlug = "";
 
-    // ✅ Course fetch
     if (courseId) {
       const c = await Course.findById(courseId);
       if (c) {
@@ -33,7 +122,6 @@ export async function createEnrollment(req, res) {
       }
     }
 
-    // ✅ Custom fields parse
     let parsedCustom = {};
     try {
       parsedCustom =
@@ -44,19 +132,9 @@ export async function createEnrollment(req, res) {
       parsedCustom = {};
     }
 
-    // ✅ MULTIPLE FILES (🔥 MAIN FIX)
-    const uploadedFiles = {};
+    // ✅ SINGLE FILE FIX
+    const uploadedFile = req.file ? req.file.filename : null;
 
-if (req.files) {
-  req.files.forEach((file) => {
-    uploadedFiles[file.fieldname] = file.filename;
-  });
-}
-console.log("FILES:", req.files);
-console.log("BODY:", req.body);
-
-
-    // ✅ Create enrollment
     const enrollment = new Enrollment({
       course: courseId,
       courseName: courseTitle,
@@ -66,43 +144,23 @@ console.log("BODY:", req.body);
       phone,
       customFields: parsedCustom,
 
-      // 🔥 IMPORTANT
-      files: uploadedFiles,
+      file: uploadedFile, // 🔥 IMPORTANT
     });
 
     await enrollment.save();
 
-    // ✅ Real-time notify
-    io.emit("new-enrollment", {
-      student: name,
-      course: courseTitle,
-    });
-
-    // ✅ Admin email
-    try {
-      await sendEmail({
-        to: process.env.ADMIN_EMAIL,
-        subject: `New Enrollment – ${courseTitle}`,
-        html: `
-          <h3>New Enrollment Received</h3>
-          <p><b>Course:</b> ${courseTitle}</p>
-          <p><b>Name:</b> ${name}</p>
-          <p><b>Email:</b> ${email}</p>
-          <p><b>Phone:</b> ${phone}</p>
-        `,
-      });
-    } catch (err) {
-      console.log("Admin email failed:", err.message);
-    }
+    console.log("✅ SAVED FILE:", uploadedFile);
 
     res.json(enrollment);
   } catch (err) {
     console.log("CREATE ENROLLMENT ERROR:", err.message);
     res.status(500).json({
-      message: "Failed to submit enrollment. Please try again.",
+      message: "Failed to submit enrollment.",
     });
   }
 }
+
+
 
 
 
@@ -207,3 +265,6 @@ export async function updateStatus(req, res) {
     });
   }
 }
+
+
+
