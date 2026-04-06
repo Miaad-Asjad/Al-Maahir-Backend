@@ -1,34 +1,19 @@
-import dotenv from "dotenv";
-dotenv.config();
+import { Resend } from "resend";
 
-import nodemailer from "nodemailer";
-
-
-console.log("EMAIL CONFIG →", {
-  user: process.env.EMAIL_USER,
-  passExists: !!process.env.EMAIL_PASS,
-});
-
-
-const transporter = nodemailer.createTransport({
-  service: "gmail", // 🔥 IMPORTANT CHANGE
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, 
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function sendEmail({ to, subject, html }) {
   try {
-    const info = await transporter.sendMail({
-      from: `"Al-Maahir Academy" <${process.env.EMAIL_USER}>`,
+    const response = await resend.emails.send({
+      from: "Al-Maahir Academy <onboarding@resend.dev>", // ✅ abhi ye hi use karo
       to,
       subject,
       html,
     });
 
-    console.log("📧 Email sent successfully:", info.messageId);
-    return info;
+    console.log("📧 Email sent:", response);
+    return response;
+
   } catch (err) {
     console.error("❌ EMAIL FAILED:", err.message);
     throw err;
