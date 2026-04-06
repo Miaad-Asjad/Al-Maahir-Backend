@@ -144,12 +144,17 @@ const upload = multer({
 
 
 export const uploadEnrollmentFile = (req, res, next) => {
-  upload.any()(req, res, (err) => { 
+  upload.any()(req, res, (err) => {
     if (err) {
       console.log("❌ FILE UPLOAD ERROR:", err.message);
-      return res.status(400).json({ message: "Enrollment file upload failed", error: err.message });
+      return res.status(400).json({
+        message: "Enrollment file upload failed",
+        error: err.message,
+      });
     }
-    console.log("✅ FILES RECEIVED:", req.files); // check here
+
+    console.log("🔥 FILES RECEIVED:", req.files); // IMPORTANT
+
     next();
   });
 };
