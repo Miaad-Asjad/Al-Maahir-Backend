@@ -130,7 +130,6 @@ export async function getGroupedEnrollments(_req, res) {
 }
 
 
-
 export async function updateStatus(req, res) {
   try {
     const { id } = req.params;
@@ -142,57 +141,86 @@ export async function updateStatus(req, res) {
     }
 
     const prevStatus = enrollment.status;
+
+    // ✅ update status
     enrollment.status = status;
     await enrollment.save();
 
+    console.log("🔄 STATUS UPDATE:", {
+      id,
+      prevStatus,
+      newStatus: status,
+      email: enrollment.email,
+    });
+
+    // ✅ get course (optional)
     const course = enrollment.course
       ? await Course.findById(enrollment.course)
       : null;
 
-   
+    /* ============================================================
+       ✅ ACCEPTED EMAIL
+    ============================================================ */
     if (
       status === "accepted" &&
       prevStatus !== "accepted" &&
-      !enrollment.emailSent &&
       enrollment.email
     ) {
-      await sendEmail({
-        to: enrollment.email,
-        subject: `Enrollment Approved – ${enrollment.courseName}`,
-        html: acceptedEmail({
-          name: enrollment.name,
-          courseName: enrollment.courseName,
-          whatsappLink: course?.whatsappGroupLink || "",
-        }),
-      });
+      try {
+        console.log("📤 Sending ACCEPT email to:", enrollment.email);
 
-      enrollment.emailSent = true;
-      await enrollment.save();
+        await sendEmail({
+          to: enrollment.email,
+          subject: `Enrollment Approved – ${enrollment.courseName}`,
+          html: acceptedEmail({
+            name: enrollment.name,
+            courseName: enrollment.courseName,
+            whatsappLink: course?.whatsappGroupLink || "",
+          }),
+        });
+
+        enrollment.emailSent = true;
+        await enrollment.save();
+
+        console.log("✅ ACCEPT email sent");
+      } catch (err) {
+        console.log("❌ ACCEPT email failed:", err.message);
+      }
     }
 
-    
+    /* ============================================================
+       ❌ REJECTED EMAIL
+    ============================================================ */
     if (
       status === "rejected" &&
       prevStatus !== "rejected" &&
       enrollment.email
     ) {
-      await sendEmail({
-        to: enrollment.email,
-        subject: `Enrollment Update – ${enrollment.courseName}`,
-        html: rejectedEmail({
-          name: enrollment.name,
-          courseName: enrollment.courseName,
-        }),
-      });
+      try {
+        console.log("📤 Sending REJECT email to:", enrollment.email);
+
+        await sendEmail({
+          to: enrollment.email,
+          subject: `Enrollment Update – ${enrollment.courseName}`,
+          html: rejectedEmail({
+            name: enrollment.name,
+            courseName: enrollment.courseName,
+          }),
+        });
+
+        console.log("✅ REJECT email sent");
+      } catch (err) {
+        console.log("❌ REJECT email failed:", err.message);
+      }
     }
 
-    res.json(enrollment);
-  } catch {
-    res.status(500).json({
+    return res.json(enrollment);
+
+  } catch (err) {
+    console.log("❌ UPDATE STATUS ERROR:", err.message);
+
+    return res.status(500).json({
       message: "Failed to update enrollment status.",
     });
   }
 }
-
-
-
