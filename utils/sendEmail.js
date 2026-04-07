@@ -13,7 +13,7 @@ export default async function sendEmail({ to, subject, html }) {
     }
 
     const response = await resend.emails.send({
-      // 🔥 YOUR DOMAIN EMAIL (FINAL)
+      
       from: "Al-Maahir Academy <noreply@almaahir.online>",
 
       to: Array.isArray(to) ? to : [to],
