@@ -114,19 +114,19 @@ export async function uploadResource(req, res) {
       });
     }
 
-    const resource = new Resource({
-      title: req.body.title || req.file.originalname,
-      type: req.body.type || "pdf",
+  const resource = new Resource({
+  title: req.body.title || req.file.originalname,
+  type: req.body.type || "pdf",
 
-      // 🔥 CLOUDINARY URL
-      url: req.file.path,
+  // correct
+  url: req.file.path,
 
-      // 🔥 important (for delete later)
-      public_id: req.file.filename,
+  //  FIXED (IMPORTANT)
+  public_id: req.file.filename,
 
-      size: req.file.size,
-      course: req.body.course || null,
-    });
+  size: req.file.size,
+  course: req.body.course || null,
+});
 
     await resource.save();
 
@@ -151,7 +151,6 @@ export async function getResources(_req, res) {
   }
 }
 
-/* ================= DELETE ================= */
 export async function deleteResource(req, res) {
   try {
     const item = await Resource.findById(req.params.id);
@@ -162,27 +161,38 @@ export async function deleteResource(req, res) {
       });
     }
 
-    // 🔥 DELETE FROM CLOUDINARY
+    /* ============================================================
+       🔥 DELETE FROM CLOUDINARY
+    ============================================================ */
     if (item.public_id) {
       try {
         await cloudinary.uploader.destroy(item.public_id, {
-          resource_type: "auto",
+          resource_type: "auto", // 🔥 important (audio/video/image sab handle)
         });
+
+        console.log("☁️ Deleted from Cloudinary:", item.public_id);
       } catch (err) {
         console.log("⚠️ Cloudinary delete failed:", err.message);
       }
     }
 
+    /* ============================================================
+       🗑️ DELETE FROM DATABASE
+    ============================================================ */
     await item.deleteOne();
 
     res.json({ success: true });
+
   } catch (err) {
-    console.log("❌ DELETE ERROR:", err.message);
+    console.log("❌ DELETE RESOURCE ERROR:", err.message);
+
     res.status(500).json({
       message: "Failed to delete resource.",
     });
   }
 }
+
+
 
 /* ================= UPDATE ================= */
 export async function updateResource(req, res) {
