@@ -1,40 +1,16 @@
 
-
-
-// import multer from "multer";
-// import { join } from "path";
-// import { fileURLToPath } from "url";
-// import fs from "fs";
-
-// const __dirname = fileURLToPath(new URL(".", import.meta.url));
-
-// const uploadDir = join(__dirname, "..", "uploads");
-// if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-// const storage = multer.diskStorage({
-//   destination: (_req, _file, cb) => cb(null, uploadDir),
-//   filename: (_req, file, cb) => {
-//     const ext = file.originalname.split(".").pop();
-//     const name = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
-//     cb(null, name);
-//   }
-// });
-
-// const upload = multer({ storage });
-
-// export const single = (fieldName) => upload.single(fieldName);
-// export const anyFiles = () => upload.any();
-
-
 // import multer from "multer";
 // import { join } from "path";
 // import fs from "fs";
 
+// /* ================= CREATE UPLOAD FOLDER ================= */
 // const uploadDir = join(process.cwd(), "uploads");
+
 // if (!fs.existsSync(uploadDir)) {
 //   fs.mkdirSync(uploadDir, { recursive: true });
 // }
 
+// /* ================= STORAGE ================= */
 // const storage = multer.diskStorage({
 //   destination: (_req, _file, cb) => {
 //     cb(null, uploadDir);
@@ -48,119 +24,139 @@
 //   },
 // });
 
+// /* ================= FILE FILTER (🔥 FIXED) ================= */
+// const fileFilter = (_req, file, cb) => {
+//   console.log("📂 FILE TYPE:", file.mimetype);
+
+//   // ✅ allow ALL audio
+//   if (file.mimetype.startsWith("audio/")) {
+//     return cb(null, true);
+//   }
+
+//   // ✅ allow images
+//   if (file.mimetype.startsWith("image/")) {
+//     return cb(null, true);
+//   }
+
+//   // ✅ allow pdf
+//   if (file.mimetype === "application/pdf") {
+//     return cb(null, true);
+//   }
+
+//   return cb(
+//     new Error("Only audio, image, and PDF files are allowed"),
+//     false
+//   );
+// };
+
+// /* ================= MULTER INSTANCE ================= */
 // const upload = multer({
 //   storage,
+//   fileFilter,
 //   limits: {
-//    fileSize: 300 * 1024 * 1024, 
-
+//     fileSize: 300 * 1024 * 1024, // 300MB
 //   },
 // });
 
-// /* ================= FILE UPLOAD MIDDLEWARES ================= */
 
 // export const uploadEnrollmentFile = (req, res, next) => {
-//   upload.single("file")(req, res, (err) => {
+//   upload.any()(req, res, (err) => {
 //     if (err) {
+//       console.log("❌ FILE UPLOAD ERROR:", err.message);
 //       return res.status(400).json({
 //         message: "Enrollment file upload failed",
 //         error: err.message,
 //       });
 //     }
+
+//     console.log("🔥 FILES RECEIVED:", req.files); // IMPORTANT
+
 //     next();
 //   });
 // };
 
+
+// /* ================= RESOURCE UPLOAD ================= */
 // export const uploadResourceFile = (req, res, next) => {
 //   upload.single("file")(req, res, (err) => {
 //     if (err) {
+//       console.log("❌ RESOURCE ERROR:", err.message);
 //       return res.status(400).json({
-//         message: "Resource file upload failed",
+//         message: "Resource upload failed",
 //         error: err.message,
 //       });
 //     }
+
 //     next();
 //   });
 // };
 
 
+
+
 import multer from "multer";
-import { join } from "path";
-import fs from "fs";
-
-/* ================= CREATE UPLOAD FOLDER ================= */
-const uploadDir = join(process.cwd(), "uploads");
-
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "../config/cloudinary.js";
 
 /* ================= STORAGE ================= */
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (_req, file, cb) => {
-    const ext = file.originalname.split(".").pop();
-    const name = `${Date.now()}-${Math.random()
-      .toString(36)
-      .slice(2, 8)}.${ext}`;
-    cb(null, name);
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    console.log("📂 FILE TYPE:", file.mimetype);
+
+    // ✅ allow audio
+    if (file.mimetype.startsWith("audio/")) {
+      return {
+        folder: "almaahir/audio",
+        resource_type: "video", // 🔥 important (audio = video in cloudinary)
+      };
+    }
+
+    // ✅ allow images
+    if (file.mimetype.startsWith("image/")) {
+      return {
+        folder: "almaahir/images",
+        resource_type: "image",
+      };
+    }
+
+    // ✅ allow pdf
+    if (file.mimetype === "application/pdf") {
+      return {
+        folder: "almaahir/docs",
+        resource_type: "raw",
+      };
+    }
+
+    throw new Error("Only audio, image, and PDF files are allowed");
   },
 });
 
-/* ================= FILE FILTER (🔥 FIXED) ================= */
-const fileFilter = (_req, file, cb) => {
-  console.log("📂 FILE TYPE:", file.mimetype);
-
-  // ✅ allow ALL audio
-  if (file.mimetype.startsWith("audio/")) {
-    return cb(null, true);
-  }
-
-  // ✅ allow images
-  if (file.mimetype.startsWith("image/")) {
-    return cb(null, true);
-  }
-
-  // ✅ allow pdf
-  if (file.mimetype === "application/pdf") {
-    return cb(null, true);
-  }
-
-  return cb(
-    new Error("Only audio, image, and PDF files are allowed"),
-    false
-  );
-};
-
-/* ================= MULTER INSTANCE ================= */
+/* ================= MULTER ================= */
 const upload = multer({
   storage,
-  fileFilter,
   limits: {
     fileSize: 300 * 1024 * 1024, // 300MB
   },
 });
 
-
+/* ================= ENROLLMENT ================= */
 export const uploadEnrollmentFile = (req, res, next) => {
   upload.any()(req, res, (err) => {
     if (err) {
-      console.log("❌ FILE UPLOAD ERROR:", err.message);
+      console.log("❌ CLOUDINARY ERROR:", err.message);
       return res.status(400).json({
         message: "Enrollment file upload failed",
         error: err.message,
       });
     }
 
-    console.log("🔥 FILES RECEIVED:", req.files); // IMPORTANT
-
+    console.log("🔥 CLOUDINARY FILES:", req.files);
     next();
   });
 };
 
-
-/* ================= RESOURCE UPLOAD ================= */
+/* ================= RESOURCE ================= */
 export const uploadResourceFile = (req, res, next) => {
   upload.single("file")(req, res, (err) => {
     if (err) {
@@ -171,6 +167,7 @@ export const uploadResourceFile = (req, res, next) => {
       });
     }
 
+    console.log("🔥 RESOURCE FILE:", req.file);
     next();
   });
 };
