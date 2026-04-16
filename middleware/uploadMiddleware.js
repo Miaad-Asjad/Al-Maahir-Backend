@@ -104,33 +104,13 @@ const storage = new CloudinaryStorage({
   params: async (req, file) => {
     console.log("📂 FILE TYPE:", file.mimetype);
 
-    // ✅ allow audio
-    if (file.mimetype.startsWith("audio/")) {
-      return {
-        folder: "almaahir/audio",
-        resource_type: "video", // 🔥 important (audio = video in cloudinary)
-      };
-    }
-
-    // ✅ allow images
-    if (file.mimetype.startsWith("image/")) {
-      return {
-        folder: "almaahir/images",
-        resource_type: "image",
-      };
-    }
-
-    // ✅ allow pdf
-    if (file.mimetype === "application/pdf") {
-      return {
-        folder: "almaahir/docs",
-        resource_type: "raw",
-      };
-    }
-
-    throw new Error("Only audio, image, and PDF files are allowed");
+    return {
+      folder: "almaahir",
+      resource_type: "auto", 
+    };
   },
 });
+
 
 /* ================= MULTER ================= */
 const upload = multer({
