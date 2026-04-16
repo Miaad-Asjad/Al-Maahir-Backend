@@ -101,7 +101,7 @@ import cloudinary from "../config/cloudinary.js";
 /* ================= STORAGE ================= */
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: async (req, file) => {
+  params: async (_req, file) => {
     console.log("📂 FILE TYPE:", file.mimetype);
 
     return {
