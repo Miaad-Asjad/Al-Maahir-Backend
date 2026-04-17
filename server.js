@@ -168,7 +168,7 @@ app.use(
 );
 
 // 🔥 HANDLE PREFLIGHT (VERY IMPORTANT)
-app.options("*", cors());
+app.options("/*", cors());
 
 /* ================= SOCKET IO ================= */
 export const io = new Server(server, {
