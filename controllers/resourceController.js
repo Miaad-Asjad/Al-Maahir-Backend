@@ -139,7 +139,7 @@ export async function uploadResource(req, res) {
   }
 }
 
-/* ================= GET ================= */
+/* ================= GET =============== */
 export async function getResources(_req, res) {
   try {
     const items = await Resource.find().sort({ createdAt: -1 });
