@@ -167,7 +167,7 @@ app.use(
   })
 );
 
-// 🔥 HANDLE PREFLIGHT (VERY IMPORTANT)
+
 app.options("/*", cors());
 
 /* ================= SOCKET IO ================= */
