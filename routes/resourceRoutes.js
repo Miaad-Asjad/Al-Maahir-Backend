@@ -31,8 +31,7 @@ router.get("/", getResources);
 
 
 router.post(
-  "/upload",
-  uploadResourceFile, 
+  "/upload", 
   requireAdmin,       
   uploadResource
 );

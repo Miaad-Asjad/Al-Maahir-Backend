@@ -108,31 +108,39 @@ import cloudinary from "../config/cloudinary.js";
 /* ================= UPLOAD ================= */
 export async function uploadResource(req, res) {
   try {
-    if (!req.file) {
+    console.log("📥 BODY:", req.body);
+
+    const { title, type, url } = req.body;
+
+    if (!url) {
       return res.status(400).json({
-        message: "File is required.",
+        message: "URL is required.",
       });
     }
 
-  const resource = new Resource({
-  title: req.body.title || req.file.originalname,
-  type: req.body.type || "pdf",
+    const resource = new Resource({
+      title: title || "Untitled",
+      type: type || "video",
 
-  // correct
-  url: req.file.path,
+      // 🔥 direct Cloudinary URL
+      url: url,
 
-  //  FIXED (IMPORTANT)
-  public_id: req.file.filename,
+      // optional (future delete support)
+      public_id: "",
 
-  size: req.file.size,
-  course: req.body.course || null,
-});
+      size: 0,
+      course: null,
+    });
 
     await resource.save();
 
+    console.log("✅ RESOURCE SAVED:", resource);
+
     res.json(resource);
+
   } catch (err) {
     console.log("❌ RESOURCE UPLOAD ERROR:", err.message);
+
     res.status(500).json({
       message: "Failed to upload resource.",
     });
