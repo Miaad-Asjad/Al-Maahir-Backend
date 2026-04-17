@@ -113,8 +113,6 @@
 // });
 
 
-
-
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -150,25 +148,13 @@ const allowedOrigins = [
 const app = express();
 const server = createServer(app);
 
-/* ================= ✅ CORS FIX (FINAL) ================= */
+/* ================= ✅ CORS (FINAL FIX) ================= */
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // postman / mobile
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        console.log("❌ CORS BLOCKED:", origin);
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
   })
 );
-
-
-app.options("/*", cors());
 
 /* ================= SOCKET IO ================= */
 export const io = new Server(server, {
