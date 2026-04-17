@@ -94,6 +94,66 @@
 
 
 
+// import multer from "multer";
+// import { CloudinaryStorage } from "multer-storage-cloudinary";
+// import cloudinary from "../config/cloudinary.js";
+
+// /* ================= STORAGE ================= */
+// const storage = new CloudinaryStorage({
+//   cloudinary,
+//   params: async (_req, file) => {
+//     console.log("📂 FILE TYPE:", file.mimetype);
+
+//     return {
+//       folder: "almaahir",
+//       resource_type: "auto", 
+//     };
+//   },
+// });
+
+
+// /* ================= MULTER ================= */
+// const upload = multer({
+//   storage,
+//   limits: {
+//     fileSize: 300 * 1024 * 1024, // 300MB
+//   },
+// });
+
+// /* ================= ENROLLMENT ================= */
+// export const uploadEnrollmentFile = (req, res, next) => {
+//   upload.any()(req, res, (err) => {
+//     if (err) {
+//       console.log("❌ CLOUDINARY ERROR:", err.message);
+//       return res.status(400).json({
+//         message: "Enrollment file upload failed",
+//         error: err.message,
+//       });
+//     }
+
+//     console.log("🔥 CLOUDINARY FILES:", req.files);
+//     next();
+//   });
+// };
+
+// /* ================= RESOURCE ================= */
+// export const uploadResourceFile = (req, res, next) => {
+//   upload.single("file")(req, res, (err) => {
+//     if (err) {
+//       console.log("❌ RESOURCE ERROR:", err.message);
+//       return res.status(400).json({
+//         message: "Resource upload failed",
+//         error: err.message,
+//       });
+//     }
+
+//     console.log("🔥 RESOURCE FILE:", req.file);
+//     next();
+//   });
+// };
+
+
+
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
@@ -106,11 +166,10 @@ const storage = new CloudinaryStorage({
 
     return {
       folder: "almaahir",
-      resource_type: "auto", 
+      resource_type: "auto", // 🔥 handles image/audio/video/pdf
     };
   },
 });
-
 
 /* ================= MULTER ================= */
 const upload = multer({
@@ -132,13 +191,17 @@ export const uploadEnrollmentFile = (req, res, next) => {
     }
 
     console.log("🔥 CLOUDINARY FILES:", req.files);
+
+    // ✅ optional (if needed later)
+    // req.file = req.files?.[0];
+
     next();
   });
 };
 
-/* ================= RESOURCE ================= */
+/* ================= RESOURCE (🔥 FIXED) ================= */
 export const uploadResourceFile = (req, res, next) => {
-  upload.single("file")(req, res, (err) => {
+  upload.any()(req, res, (err) => {
     if (err) {
       console.log("❌ RESOURCE ERROR:", err.message);
       return res.status(400).json({
@@ -147,7 +210,15 @@ export const uploadResourceFile = (req, res, next) => {
       });
     }
 
-    console.log("🔥 RESOURCE FILE:", req.file);
+    console.log("🔥 RESOURCE FILES:", req.files);
+
+    // 🔥 IMPORTANT FIX
+    req.file = req.files?.[0];
+
+    if (!req.file) {
+      console.log("❌ NO FILE AFTER MULTER");
+    }
+
     next();
   });
-};
+}
