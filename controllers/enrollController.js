@@ -437,9 +437,6 @@ export async function updateStatus(req, res) {
 
 
 
-
-import cloudinary from "../config/cloudinary.js";
-
 export async function deleteEnrollment(req, res) {
   try {
     const enrollment = await Enrollment.findById(req.params.id);
