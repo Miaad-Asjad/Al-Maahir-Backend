@@ -104,6 +104,7 @@
 
 import Resource from "../models/Resource.js";
 import cloudinary from "../config/cloudinary.js";
+import crypto from "crypto";
 
 /* ================= UPLOAD ================= */
 export async function uploadResource(req, res) {
@@ -227,5 +228,31 @@ export async function updateResource(req, res) {
     res.status(500).json({
       message: "Failed to update resource.",
     });
+  }
+}
+
+
+
+
+export function getCloudinarySignature(req, res) {
+  try {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+
+    const signature = crypto
+      .createHash("sha1")
+      .update(
+        `timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`
+      )
+      .digest("hex");
+
+    res.json({
+      timestamp,
+      signature,
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey: process.env.CLOUDINARY_API_KEY,
+    });
+  } catch (err) {
+    console.log("❌ SIGNATURE ERROR:", err.message);
+    res.status(500).json({ message: "Signature failed" });
   }
 }
