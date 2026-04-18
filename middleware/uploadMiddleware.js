@@ -201,7 +201,7 @@ export const uploadEnrollmentFile = (req, res, next) => {
 
 /* ================= RESOURCE (🔥 FIXED) ================= */
 export const uploadResourceFile = (req, res, next) => {
-  upload.any()(req, res, (err) => {
+  upload.single("file")(req, res, (err) => {
     if (err) {
       console.log("❌ RESOURCE ERROR:", err.message);
       return res.status(400).json({
@@ -210,15 +210,15 @@ export const uploadResourceFile = (req, res, next) => {
       });
     }
 
-    console.log("🔥 RESOURCE FILES:", req.files);
-
-    // 🔥 IMPORTANT FIX
-    req.file = req.files?.[0];
+    console.log("🔥 RESOURCE FILE:", req.file);
 
     if (!req.file) {
-      console.log("❌ NO FILE AFTER MULTER");
+      console.log("❌ NO FILE RECEIVED");
+      return res.status(400).json({
+        message: "No file uploaded",
+      });
     }
 
     next();
   });
-}
+};
