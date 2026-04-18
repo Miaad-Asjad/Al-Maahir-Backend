@@ -234,15 +234,17 @@ export async function updateResource(req, res) {
 
 
 
+import crypto from "crypto";
+
 export function getCloudinarySignature(req, res) {
   try {
     const timestamp = Math.round(new Date().getTime() / 1000);
 
+    const paramsToSign = `timestamp=${timestamp}`;
+
     const signature = crypto
       .createHash("sha1")
-      .update(
-        `timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`
-      )
+      .update(paramsToSign + process.env.CLOUDINARY_API_SECRET)
       .digest("hex");
 
     res.json({
