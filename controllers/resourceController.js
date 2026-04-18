@@ -234,7 +234,6 @@ export async function updateResource(req, res) {
 
 
 
-import crypto from "crypto";
 
 export function getCloudinarySignature(req, res) {
   try {
