@@ -232,6 +232,7 @@ import Course from "../models/Course.js";
 import sendEmail from "../utils/sendEmail.js";
 import { acceptedEmail, rejectedEmail } from "../utils/emailTemplates.js";
 import { io } from "../server.js";
+import cloudinary from "../config/cloudinary.js";
 
 /* ================= CREATE ================= */
 export async function createEnrollment(req, res) {
@@ -265,16 +266,7 @@ export async function createEnrollment(req, res) {
     /* ============================================================
        🔥 CLOUDINARY FILES FIX
     ============================================================ */
-    const uploadedFiles = {};
-
-    if (req.files && req.files.length > 0) {
-      req.files.forEach((file) => {
-        uploadedFiles[file.fieldname] = {
-          url: file.path,          // ✅ Cloudinary URL
-          public_id: file.filename, // ✅ Cloudinary public_id
-        };
-      });
-    }
+    const uploadedFiles = req.body.files || {};
 
     const enrollment = new Enrollment({
       course: courseId,
@@ -440,5 +432,45 @@ export async function updateStatus(req, res) {
     return res.status(500).json({
       message: "Failed to update enrollment status.",
     });
+  }
+}
+
+
+
+
+import cloudinary from "../config/cloudinary.js";
+
+export async function deleteEnrollment(req, res) {
+  try {
+    const enrollment = await Enrollment.findById(req.params.id);
+
+    if (!enrollment) {
+      return res.status(404).json({ message: "Enrollment not found." });
+    }
+
+    /* 🔥 DELETE FILES FROM CLOUDINARY */
+    if (enrollment.files) {
+      for (const [key, file] of enrollment.files.entries()) {
+        if (file?.public_id) {
+          try {
+            await cloudinary.uploader.destroy(file.public_id, {
+              resource_type: "auto",
+            });
+            console.log("☁️ Deleted:", file.public_id);
+          } catch (err) {
+            console.log("⚠️ Cloudinary delete failed:", err.message);
+          }
+        }
+      }
+    }
+
+    /* 🗑️ DELETE FROM DATABASE */
+    await enrollment.deleteOne();
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log("❌ DELETE ENROLLMENT ERROR:", err.message);
+    res.status(500).json({ message: "Delete failed" });
   }
 }
