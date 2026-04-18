@@ -154,30 +154,30 @@
 
 
 
-import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
-import cloudinary from "../config/cloudinary.js";
+// import multer from "multer";
+// import { CloudinaryStorage } from "multer-storage-cloudinary";
+// import cloudinary from "../config/cloudinary.js";
 
-/* ================= STORAGE ================= */
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: async (_req, file) => {
-    console.log("📂 FILE TYPE:", file.mimetype);
+// /* ================= STORAGE ================= */
+// const storage = new CloudinaryStorage({
+//   cloudinary,
+//   params: async (_req, file) => {
+//     console.log("📂 FILE TYPE:", file.mimetype);
 
-    return {
-      folder: "almaahir",
-      resource_type: "auto", // 🔥 handles image/audio/video/pdf
-    };
-  },
-});
+//     return {
+//       folder: "almaahir",
+//       resource_type: "auto", // 🔥 handles image/audio/video/pdf
+//     };
+//   },
+// });
 
-/* ================= MULTER ================= */
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 300 * 1024 * 1024, // 300MB
-  },
-});
+// /* ================= MULTER ================= */
+// const upload = multer({
+//   storage,
+//   limits: {
+//     fileSize: 300 * 1024 * 1024, // 300MB
+//   },
+// });
 
 /* ================= ENROLLMENT ================= */
 export const uploadEnrollmentFile = (req, res, next) => {

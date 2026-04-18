@@ -43,13 +43,38 @@
 
 
 
+// import { Router } from "express";
+// import {
+//   getResources,
+//   uploadResource,
+//   deleteResource,
+//   updateResource,
+//   getCloudinarySignature, 
+// } from "../controllers/resourceController.js";
+
+// import { requireAdmin } from "../middleware/authMiddleware.js";
+
+// const router = Router();
+
+// router.get("/", getResources);
+
+// // 🔥 NEW ROUTE
+// router.get("/signature", getCloudinarySignature);
+
+// router.post("/upload", requireAdmin, uploadResource);
+
+// router.delete("/:id", requireAdmin, deleteResource);
+// router.put("/:id", requireAdmin, updateResource);
+
+// export default router;
+
+
 import { Router } from "express";
 import {
   getResources,
   uploadResource,
   deleteResource,
   updateResource,
-  getCloudinarySignature, 
 } from "../controllers/resourceController.js";
 
 import { requireAdmin } from "../middleware/authMiddleware.js";
@@ -58,8 +83,7 @@ const router = Router();
 
 router.get("/", getResources);
 
-// 🔥 NEW ROUTE
-router.get("/signature", getCloudinarySignature);
+/* ❌ SIGNATURE ROUTE REMOVED */
 
 router.post("/upload", requireAdmin, uploadResource);
 
