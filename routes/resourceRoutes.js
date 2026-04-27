@@ -83,7 +83,6 @@ const router = Router();
 
 router.get("/", getResources);
 
-/* ❌ SIGNATURE ROUTE REMOVED */
 
 router.post("/upload", requireAdmin, uploadResource);
 

@@ -48,6 +48,7 @@ const courseSchema = new Schema(
 
     
     formFields: [formFieldSchema],
+    isEnrollmentOpen: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

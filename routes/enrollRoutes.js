@@ -32,10 +32,10 @@ import { requireAdmin } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-/* ✅ ENROLLMENT */
+/*  ENROLLMENT */
 router.post("/", createEnrollment);
 
-/* ✅ ADMIN ROUTES */
+/*  ADMIN ROUTES */
 router.get("/all", requireAdmin, getAllEnrollments);
 router.put("/:id/status", requireAdmin, updateStatus);
 router.get("/grouped", requireAdmin, getGroupedEnrollments);

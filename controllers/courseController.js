@@ -159,3 +159,24 @@ export async function duplicateCourse(req, res) {
     res.status(500).json({ message: "Failed to duplicate course." });
   }
 }
+
+
+export async function toggleEnrollment(req, res) {
+  try {
+    const { slug } = req.params;
+
+    const course = await Course.findOne({ slug });
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found." });
+    }
+
+    course.isEnrollmentOpen = !course.isEnrollmentOpen;
+
+    await course.save();
+
+    res.json(course);
+  } catch {
+    res.status(500).json({ message: "Failed to toggle enrollment." });
+  }
+}

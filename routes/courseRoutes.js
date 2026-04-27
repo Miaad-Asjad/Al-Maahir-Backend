@@ -8,7 +8,8 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
-  duplicateCourse
+  duplicateCourse,
+  toggleEnrollment
 } from "../controllers/courseController.js";
 
 import { requireAdmin } from "../middleware/authMiddleware.js";
@@ -24,6 +25,7 @@ router.get("/:slug", getBySlug);
 
 router.post("/", requireAdmin, createCourse);
 router.put("/:slug", requireAdmin, updateCourse);
+router.patch("/:slug/toggle-enrollment", toggleEnrollment);
 router.delete("/:slug", requireAdmin, deleteCourse);
 
 
