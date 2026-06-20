@@ -11,14 +11,22 @@ export function acceptedEmail({ name, courseName, whatsappLink }) {
       </p>
 
       ${
-        whatsappLink
-          ? `<p>
-              👉 Please join the official WhatsApp group using the link below:
-              <br/>
-              <a href="${whatsappLink}" target="_blank">
-                Join WhatsApp Group
-              </a>
-            </p>`
+  whatsappLink
+    ? `<p>
+        👉 Please join the official WhatsApp group using the link below:
+        <br/>
+        <a href="${whatsappLink}" target="_blank">
+          Join WhatsApp Group
+        </a>
+      </p>
+
+      <p>
+        🎥 Before classes begin, please watch our Zoom setup guide:
+        <br/>
+        <a href="https://youtube.com/shorts/-iMDKs63NYQ?si=B5-ILAXJmHPI6UBM" target="_blank">
+          How to Install & Set Up Zoom for Classes
+        </a>
+      </p>`
           : `<p>
               📌 Our team will contact you shortly with further details.
             </p>`
